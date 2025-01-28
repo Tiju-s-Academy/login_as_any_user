@@ -33,6 +33,7 @@
     'website': 'https://www.cybrosys.com',
     'depends': ['web'],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'wizards/user_selection_views.xml'
     ],

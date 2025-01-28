@@ -31,7 +31,12 @@ class UserSwitch(http.Controller):
             function to switch back to admin
     """
 
-    @http.route('/switch/user', type='json', auth='public')
+    def _check_admin_access(self):
+        if not request.env.user.has_group('login_as_any_user.group_login_as_any_user'):
+            return False
+        return True
+
+    @http.route('/switch/user', type='json', auth='user')
     def user_switch(self):
         """
             Summary:
@@ -39,9 +44,11 @@ class UserSwitch(http.Controller):
             Return:
                 weather the current user is admin or not
         """
+        if not self._check_admin_access():
+            return {'error': 'Access Denied'}
         return request.env.user._is_admin()
 
-    @http.route('/switch/admin', type='json', auth='public')
+    @http.route('/switch/admin', type='json', auth='user')
     def switch_admin(self):
         """
             Summary:
@@ -49,6 +56,8 @@ class UserSwitch(http.Controller):
             Return:
                 the home page to be loaded
                 """
+        if not self._check_admin_access():
+            return {'error': 'Access Denied'}
         session = request.session
         pre_user = request.env['res.users'].browse(session.previous_user)
         if pre_user and pre_user._is_admin:
